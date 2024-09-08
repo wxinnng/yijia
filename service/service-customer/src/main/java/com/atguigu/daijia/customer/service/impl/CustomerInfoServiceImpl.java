@@ -2,12 +2,16 @@ package com.atguigu.daijia.customer.service.impl;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import com.alibaba.nacos.common.utils.StringUtils;
+import com.atguigu.daijia.common.execption.GuiguException;
+import com.atguigu.daijia.common.result.ResultCodeEnum;
 import com.atguigu.daijia.customer.mapper.CustomerInfoMapper;
 import com.atguigu.daijia.customer.mapper.CustomerLoginLogMapper;
 import com.atguigu.daijia.customer.service.CustomerInfoService;
 import com.atguigu.daijia.model.entity.customer.CustomerInfo;
 import com.atguigu.daijia.model.entity.customer.CustomerLoginLog;
+import com.atguigu.daijia.model.form.customer.UpdateWxPhoneForm;
 import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -21,6 +25,17 @@ import org.springframework.stereotype.Service;
 @Service
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, CustomerInfo> implements CustomerInfoService {
+
+    @Autowired
+    private WxMaService wxMaService;
+
+    @Autowired
+    private CustomerInfoMapper customerInfoMapper;
+
+    @Autowired
+    private CustomerLoginLogMapper customerLoginLogMapper;
+
+
     @Override
     public CustomerLoginVo getCustomerInfo(Long customerId) {
         //1 根据用户id查询用户信息
@@ -41,14 +56,27 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         return customerLoginVo;
     }
 
-    @Autowired
-    private WxMaService wxMaService;
+    @Override
+    public Boolean updateWxPhoneNumber(UpdateWxPhoneForm updateWxPhoneForm) {
+        //1 根据code值获取微信绑定手机号码
+        try {
+            WxMaPhoneNumberInfo phoneNoInfo =
+                    wxMaService.getUserService().getPhoneNoInfo(updateWxPhoneForm.getCode());
+            String phoneNumber = phoneNoInfo.getPhoneNumber();
 
-    @Autowired
-    private CustomerInfoMapper customerInfoMapper;
+            //更新用户信息
+            Long customerId = updateWxPhoneForm.getCustomerId();
+            CustomerInfo customerInfo = customerInfoMapper.selectById(customerId);
+            customerInfo.setPhone(phoneNumber);
+            customerInfoMapper.updateById(customerInfo);
 
-    @Autowired
-    private CustomerLoginLogMapper customerLoginLogMapper;
+            return true;
+        } catch (WxErrorException e) {
+            throw new GuiguException(ResultCodeEnum.DATA_ERROR);
+        }
+    }
+
+
 
 
     @Override
