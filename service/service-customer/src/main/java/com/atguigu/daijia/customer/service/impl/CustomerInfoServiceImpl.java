@@ -2,15 +2,18 @@ package com.atguigu.daijia.customer.service.impl;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import com.alibaba.nacos.common.utils.StringUtils;
 import com.atguigu.daijia.customer.mapper.CustomerInfoMapper;
 import com.atguigu.daijia.customer.mapper.CustomerLoginLogMapper;
 import com.atguigu.daijia.customer.service.CustomerInfoService;
 import com.atguigu.daijia.model.entity.customer.CustomerInfo;
 import com.atguigu.daijia.model.entity.customer.CustomerLoginLog;
+import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,25 @@ import org.springframework.stereotype.Service;
 @Service
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, CustomerInfo> implements CustomerInfoService {
+    @Override
+    public CustomerLoginVo getCustomerInfo(Long customerId) {
+        //1 根据用户id查询用户信息
+        CustomerInfo customerInfo = customerInfoMapper.selectById(customerId);
+
+        //2 封装到CustomerLoginVo
+        CustomerLoginVo customerLoginVo = new CustomerLoginVo();
+        //customerLoginVo.setNickname(customerInfo.getNickname());
+        BeanUtils.copyProperties(customerInfo,customerLoginVo);
+
+        //@Schema(description = "是否绑定手机号码")
+        //    private Boolean isBindPhone;
+        String phone = customerInfo.getPhone();
+        boolean isBindPhone = StringUtils.hasText(phone);
+        customerLoginVo.setIsBindPhone(isBindPhone);
+
+        //3 CustomerLoginVo返回
+        return customerLoginVo;
+    }
 
     @Autowired
     private WxMaService wxMaService;
