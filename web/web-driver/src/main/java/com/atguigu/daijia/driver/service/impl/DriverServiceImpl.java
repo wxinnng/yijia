@@ -4,6 +4,8 @@ import com.atguigu.daijia.common.constant.RedisConstant;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.driver.client.DriverInfoFeignClient;
 import com.atguigu.daijia.driver.service.DriverService;
+import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
+import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,14 @@ import java.util.concurrent.TimeUnit;
 @Service
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class DriverServiceImpl implements DriverService {
+    //更新司机认证信息
+    @Override
+    public Boolean updateDriverAuthInfo(UpdateDriverAuthInfoForm updateDriverAuthInfoForm) {
+        Result<Boolean> booleanResult = driverInfoFeignClient.UpdateDriverAuthInfo(updateDriverAuthInfoForm);
+        Boolean data = booleanResult.getData();
+        return data;
+    }
+
     //司机认证信息
     @Override
     public DriverAuthInfoVo getDriverAuthInfo(Long driverId) {
@@ -45,5 +55,12 @@ public class DriverServiceImpl implements DriverService {
                 RedisConstant.USER_LOGIN_KEY_TIMEOUT,
                 TimeUnit.SECONDS);
         return token;
+    }
+
+    //创建司机人脸模型
+    @Override
+    public Boolean creatDriverFaceModel(DriverFaceModelForm driverFaceModelForm) {
+        Result<Boolean> booleanResult = driverInfoFeignClient.creatDriverFaceModel(driverFaceModelForm);
+        return booleanResult.getData();
     }
 }
