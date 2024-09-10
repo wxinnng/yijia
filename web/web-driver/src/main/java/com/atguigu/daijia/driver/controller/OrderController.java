@@ -10,10 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -31,6 +28,11 @@ public class OrderController {
         @Autowired
         private OcrService ocrService;
 
+
+
+        @Autowired
+        private OrderService orderService;
+
         @Operation(summary = "身份证识别")
         @GuiguLogin
         @PostMapping("/idCardOcr")
@@ -44,6 +46,15 @@ public class OrderController {
         @PostMapping("/driverLicenseOcr")
         public Result<DriverLicenseOcrVo> driverLicenseOcr(@RequestPart("file") MultipartFile file) {
             return Result.ok(ocrService.driverLicenseOcr(file));
+        }
+
+
+
+        @Operation(summary = "查询订单状态")
+        @GuiguLogin
+        @GetMapping("/getOrderStatus/{orderId}")
+        public Result<Integer> getOrderStatus(@PathVariable Long orderId) {
+            return Result.ok(orderService.getOrderStatus(orderId));
         }
     }
 

@@ -12,22 +12,22 @@ global com.atguigu.daijia.model.vo.rules.FeeRuleResponse feeRuleResponse;
     00:00:00-06:59:59  19元(含3公里)
     07:00:00-23:59:59  19元(含5公里)
 */
-rule "起步价 00:00:00-06:59:59  19元(含3公里)"
+rule "起步价 00:00:00-07:00:00  19元(含3公里)"
     salience 10          //指定优先级，数值越大优先级越高，不指定的情况下由上到下执行
     no-loop true         //防止陷入死循环
     when
-        /*规则条件，到工作内存中查找FeeRuleRequest对象
-        里面出来的结果只能是ture或者false
-        $rule是绑定变量名，可以任意命名，官方推荐$符号，定义了绑定变量名，可以在then部分操作fact对象*/
-        $rule:FeeRuleRequest(startTime >= "00:00:00" && startTime <= "06:59:59")
+        $rule:FeeRuleRequest(startTime >= "00:00:00" && startTime < "07:00:00")
     then
+        //基础里程 3公里
         feeRuleResponse.setBaseDistance(new BigDecimal("3.0"));
+        //收费19元 础里程费
         feeRuleResponse.setBaseDistanceFee(new BigDecimal("19.0"));
-        //3公里内里程费为0
+        //超出里程  超出基础里程的里程
         feeRuleResponse.setExceedDistance(new BigDecimal("0.0"));
         feeRuleResponse.setExceedDistancePrice(new BigDecimal("4.0"));
-        System.out.println("00:00:00-06:59:59 " + feeRuleResponse.getBaseDistance() + "公里，起步价:" + feeRuleResponse.getBaseDistanceFee() + "元");
+        System.out.println("00:00:00-07:00:00 " + feeRuleResponse.getBaseDistance() + "公里，起步价:" + feeRuleResponse.getBaseDistanceFee() + "元");
 end
+
 rule "起步价 07:00:00-23:59:59  19元(含5公里)"
     salience 10          //指定优先级，数值越大优先级越高，不指定的情况下由上到下执行
     no-loop true         //防止陷入死循环
@@ -61,7 +61,7 @@ rule "里程费 00:00:00-06:59:59 4元/1公里"
         $rule是绑定变量名，可以任意命名，官方推荐$符号，定义了绑定变量名，可以在then部分操作fact对象*/
         $rule:FeeRuleRequest(startTime >= "00:00:00"
             && startTime <= "06:59:59"
-            && distance.doubleValue() > 3.0)
+            && distance > 3.0)
     then
         BigDecimal exceedDistance = $rule.getDistance().subtract(new BigDecimal("3.0"));
         feeRuleResponse.setExceedDistance(exceedDistance);
@@ -77,7 +77,7 @@ rule "里程费 07:00:00-23:59:59 3元/1公里"
         $rule是绑定变量名，可以任意命名，官方推荐$符号，定义了绑定变量名，可以在then部分操作fact对象*/
         $rule:FeeRuleRequest(startTime >= "07:00:00"
             && startTime <= "23:59:59"
-            && distance.doubleValue() > 5.0)
+            && distance > 5.0)
     then
         BigDecimal exceedDistance = $rule.getDistance().subtract(new BigDecimal("5.0"));
         feeRuleResponse.setExceedDistance(exceedDistance);
@@ -130,7 +130,7 @@ rule "远途费 订单行程超出12公里后每公里1元"
         /*规则条件，到工作内存中查找FeeRuleRequest对象
         里面出来的结果只能是ture或者false
         $rule是绑定变量名，可以任意命名，官方推荐$符号，定义了绑定变量名，可以在then部分操作fact对象*/
-        $rule:FeeRuleRequest(distance.doubleValue() > 12.0)
+        $rule:FeeRuleRequest(distance > 12.0)
     then
         BigDecimal exceedLongDistance = $rule.getDistance().subtract(new BigDecimal("12.0"));
         feeRuleResponse.setBaseLongDistance(new BigDecimal("12.0"));
@@ -145,7 +145,7 @@ rule "无远途费"
         /*规则条件，到工作内存中查找FeeRuleRequest对象
         里面出来的结果只能是ture或者false
         $rule是绑定变量名，可以任意命名，官方推荐$符号，定义了绑定变量名，可以在then部分操作fact对象*/
-        $rule:FeeRuleRequest(distance.doubleValue() <= 12.0)
+        $rule:FeeRuleRequest(distance <= 12.0)
     then
         feeRuleResponse.setBaseLongDistance(new BigDecimal("12.0"));
         feeRuleResponse.setExceedLongDistance(new BigDecimal("0"));
@@ -164,12 +164,13 @@ rule "计算总金额"
         /*规则条件，到工作内存中查找FeeRuleRequest对象
         里面出来的结果只能是ture或者false
         $rule是绑定变量名，可以任意命名，官方推荐$符号，定义了绑定变量名，可以在then部分操作fact对象*/
-        $rule:FeeRuleRequest(distance.doubleValue() > 0.0)
+        $rule:FeeRuleRequest(distance > 0.0)
     then
         //订单总金额 = 基础里程费 + 超出基础里程的费 + 等候费 + 远程费
         BigDecimal distanceFee = feeRuleResponse.getBaseDistanceFee().add(feeRuleResponse.getExceedDistance().multiply(feeRuleResponse.getExceedDistancePrice()));
         BigDecimal waitFee = new BigDecimal(feeRuleResponse.getExceedWaitMinute()).multiply(feeRuleResponse.getExceedWaitMinutePrice());
         BigDecimal longDistanceFee = feeRuleResponse.getExceedLongDistance().multiply(feeRuleResponse.getExceedLongDistancePrice());
+
         BigDecimal totalAmount = distanceFee.add(waitFee).add(longDistanceFee);
         feeRuleResponse.setDistanceFee(distanceFee);
         feeRuleResponse.setWaitFee(waitFee);

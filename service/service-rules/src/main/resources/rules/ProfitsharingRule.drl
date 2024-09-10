@@ -40,7 +40,7 @@ rule "订单金额小于等于100 当天完成订单小于等于10单"
         /*规则条件，到工作内存中查找FeeRuleRequest对象
         里面出来的结果只能是ture或者false
         $rule是绑定变量名，可以任意命名，官方推荐$符号，定义了绑定变量名，可以在then部分操作fact对象*/
-        $rule:ProfitsharingRuleRequest(orderAmount.doubleValue() <= 100.0 && orderNum <= 10)
+        $rule:ProfitsharingRuleRequest(orderAmount <= 100.0 && orderNum <= 10)
     then
         BigDecimal totalAmount = profitsharingRuleResponse.getOrderAmount().subtract(profitsharingRuleResponse.getPaymentFee());
         BigDecimal platformIncome = totalAmount.multiply(new BigDecimal("0.2")).setScale(2, RoundingMode.HALF_UP);
@@ -61,7 +61,7 @@ rule "订单金额小于等于100 天完成订单大于10单"
         /*规则条件，到工作内存中查找FeeRuleRequest对象
         里面出来的结果只能是ture或者false
         $rule是绑定变量名，可以任意命名，官方推荐$符号，定义了绑定变量名，可以在then部分操作fact对象*/
-        $rule:ProfitsharingRuleRequest(orderAmount.doubleValue() <= 100.0 && orderNum > 10)
+        $rule:ProfitsharingRuleRequest(orderAmount <= 100.0 && orderNum > 10)
     then
         BigDecimal totalAmount = profitsharingRuleResponse.getOrderAmount().subtract(profitsharingRuleResponse.getPaymentFee());
         BigDecimal platformIncome = totalAmount.multiply(new BigDecimal("0.18")).setScale(2, RoundingMode.HALF_UP);
@@ -88,7 +88,7 @@ rule "订单金额大于100 当天完成订单小于等于10单"
         /*规则条件，到工作内存中查找FeeRuleRequest对象
         里面出来的结果只能是ture或者false
         $rule是绑定变量名，可以任意命名，官方推荐$符号，定义了绑定变量名，可以在then部分操作fact对象*/
-        $rule:ProfitsharingRuleRequest(orderAmount.doubleValue() > 100.0 && orderNum <= 10)
+        $rule:ProfitsharingRuleRequest(orderAmount > 100.0 && orderNum <= 10)
     then
         BigDecimal totalAmount = profitsharingRuleResponse.getOrderAmount().subtract(profitsharingRuleResponse.getPaymentFee());
         BigDecimal platformIncome = totalAmount.multiply(new BigDecimal("0.18")).setScale(2, RoundingMode.HALF_UP);
@@ -109,7 +109,7 @@ rule "订单金额大于100 天完成订单大于10单"
         /*规则条件，到工作内存中查找FeeRuleRequest对象
         里面出来的结果只能是ture或者false
         $rule是绑定变量名，可以任意命名，官方推荐$符号，定义了绑定变量名，可以在then部分操作fact对象*/
-        $rule:ProfitsharingRuleRequest(orderAmount.doubleValue() > 100.0 && orderNum > 10)
+        $rule:ProfitsharingRuleRequest(orderAmount > 100.0 && orderNum > 10)
     then
         BigDecimal totalAmount = profitsharingRuleResponse.getOrderAmount().subtract(profitsharingRuleResponse.getPaymentFee());
         BigDecimal platformIncome = totalAmount.multiply(new BigDecimal("0.18")).setScale(2, RoundingMode.HALF_UP);

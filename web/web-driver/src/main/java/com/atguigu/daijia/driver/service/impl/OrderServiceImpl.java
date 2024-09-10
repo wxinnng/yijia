@@ -12,4 +12,11 @@ import org.springframework.stereotype.Service;
 public class OrderServiceImpl implements OrderService {
 
 
+    @Autowired
+    private OrderInfoFeignClient orderInfoFeignClient;
+
+    @Override
+    public Integer getOrderStatus(Long orderId) {
+        return orderInfoFeignClient.getOrderStatus(orderId).getData();
+    }
 }
