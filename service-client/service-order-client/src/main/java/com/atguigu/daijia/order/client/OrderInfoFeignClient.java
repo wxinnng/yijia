@@ -1,7 +1,9 @@
 package com.atguigu.daijia.order.client;
 
+import ch.qos.logback.core.spi.ConfigurationEvent;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.model.form.order.OrderInfoForm;
+import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,4 +31,11 @@ public interface OrderInfoFeignClient {
      */
     @GetMapping("/order/info/getOrderStatus/{orderId}")
     Result<Integer> getOrderStatus(@PathVariable("orderId") Long orderId);
+    /**
+     * 司机端查找当前订单
+     * @param driverId
+     * @return
+     */
+    @GetMapping("/order/info/searchDriverCurrentOrder/{driverId}")
+    Result<CurrentOrderInfoVo> searchDriverCurrentOrder(@PathVariable("driverId") Long driverId);
 }

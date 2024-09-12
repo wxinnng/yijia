@@ -26,7 +26,7 @@ public class MapServiceImpl implements MapService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("tencent.cloud.map")
+    @Value("${tencent.map.key}")
     private String key;
 
     //计算驾驶线路
@@ -47,8 +47,11 @@ public class MapServiceImpl implements MapService {
         //key
         map.put("key",key);
 
+        System.err.println(key);
+
         //使用RestTemplate调用 GET
         JSONObject result = restTemplate.getForObject(url, JSONObject.class, map);
+        System.err.println(result);
         //处理返回结果
         //判断调用是否成功
         int status = result.getIntValue("status");
@@ -71,6 +74,7 @@ public class MapServiceImpl implements MapService {
         //路线
         drivingLineVo.setPolyline(route.getJSONArray("polyline"));
 
+        System.out.println(drivingLineVo);
         return drivingLineVo;
     }
 }

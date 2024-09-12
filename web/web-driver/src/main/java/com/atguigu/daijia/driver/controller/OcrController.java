@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value="/ocr")
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class OcrController {
-	
 
 }
 

@@ -39,6 +39,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public List<NearByDriverVo> searchNearByDriver(SearchNearByDriverForm searchNearByDriverForm) {
+        System.err.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         //
         //1 操作redis里面geo
         //创建point，经纬度位置
@@ -76,6 +77,7 @@ public class LocationServiceImpl implements LocationService {
 
                 //获取司机id
                 Long driverId = Long.parseLong(item.getContent().getName());
+                System.err.println("driverId:"+driverId);
 
                 //远程调用，根据司机id个性化设置信息
                 Result<DriverSet> driverSetResult = driverInfoFeignClient.getDriverSet(driverId);

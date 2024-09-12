@@ -17,17 +17,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Component
-@Aspect
+@Aspect  //切面类
 public class GuiguLoginAspect {
 
     @Autowired
     private RedisTemplate redisTemplate;
 
-
     //环绕通知，登录判断
     //切入点表达式：指定对哪些规则的方法进行增强
     @Around("execution(* com.atguigu.daijia.*.controller.*.*(..)) && @annotation(guiguLogin)")
-    public Object login(ProceedingJoinPoint proceedingJoinPoint, GuiguLogin guiguLogin)  throws Throwable {
+    public Object login(ProceedingJoinPoint proceedingJoinPoint,GuiguLogin guiguLogin)  throws Throwable {
 
         //1 获取request对象
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
@@ -44,7 +43,7 @@ public class GuiguLoginAspect {
 
         //4 token不为空，查询redis
         String customerId = (String)redisTemplate.opsForValue()
-                .get(RedisConstant.USER_LOGIN_KEY_PREFIX+token);
+                           .get(RedisConstant.USER_LOGIN_KEY_PREFIX+token);
 
         //5 查询redis对应用户id，把用户id放到ThreadLocal里面
         if(StringUtils.hasText(customerId)) {
@@ -54,4 +53,5 @@ public class GuiguLoginAspect {
         //6 执行业务方法
         return proceedingJoinPoint.proceed();
     }
+
 }

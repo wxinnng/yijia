@@ -24,6 +24,8 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+
+
     //TODO 后续完善，目前假设乘客当前没有订单
     @Operation(summary = "查找乘客端当前订单")
     @GuiguLogin
@@ -56,5 +58,7 @@ public class OrderController {
     public Result<Integer> getOrderStatus(@PathVariable Long orderId) {
         return Result.ok(orderService.getOrderStatus(orderId));
     }
+
+
 }
 

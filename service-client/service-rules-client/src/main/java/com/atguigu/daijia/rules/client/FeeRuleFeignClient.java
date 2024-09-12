@@ -18,3 +18,4 @@ public interface FeeRuleFeignClient {
     @PostMapping("/rules/fee/calculateOrderFee")
     Result<FeeRuleResponseVo> calculateOrderFee(@RequestBody FeeRuleRequestForm calculateOrderFeeForm);
 }
+
