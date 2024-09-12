@@ -36,29 +36,34 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Override
     public Boolean robNewOrder(Long driverId, Long orderId) {
-        //判断订单是否已经被抢，通过Redis
-        if(redisTemplate.hasKey(RedisConstant.ORDER_ACCEPT_MARK + orderId)){
+        //判断订单是否存在，通过Redis，减少数据库压力
+        if(!redisTemplate.hasKey(RedisConstant.ORDER_ACCEPT_MARK)) {
             //抢单失败
             throw new GuiguException(ResultCodeEnum.COB_NEW_ORDER_FAIL);
         }
-        //修改mysql中订单的状态(driverID + OrderId)
+
+        //司机抢单
+        //update order_info set status =2 ,driver_id = ?,accept_time = ?
+        // where id=? and status = 1
         LambdaQueryWrapper<OrderInfo> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(OrderInfo::getId,orderId);
-        OrderInfo orderInfo = orderInfoMapper.selectOne(wrapper);
+        wrapper.eq(OrderInfo::getStatus,OrderStatus.WAITING_ACCEPT.getStatus());
 
-        orderInfo.setDriverId(driverId);
+        //修改值
+        OrderInfo orderInfo = new OrderInfo();
         orderInfo.setStatus(OrderStatus.ACCEPTED.getStatus());
+        orderInfo.setDriverId(driverId);
         orderInfo.setAcceptTime(new Date());
-        //调用方法,修改状态
-        int result = orderInfoMapper.updateById(orderInfo);
 
-        if(result != 1){
+        //调用方法修改
+        int rows = orderInfoMapper.update(orderInfo,wrapper);
+        if(rows != 1) {
+            //抢单失败
             throw new GuiguException(ResultCodeEnum.COB_NEW_ORDER_FAIL);
         }
 
-        //删除抢单的标识
-        redisTemplate.delete(RedisConstant.ORDER_ACCEPT_MARK + orderId);
-
+        //删除抢单标识
+        redisTemplate.delete(RedisConstant.ORDER_ACCEPT_MARK);
         return true;
     }
 
