@@ -13,4 +13,6 @@ public interface OrderService {
     List<NewOrderDataVo> findNewOrderQueueData(Long driverId);
 
     CurrentOrderInfoVo searchDriverCurrentOrder(Long driverId);
+
+    Boolean robNewOrder(Long driverId, Long orderId);
 }

@@ -38,4 +38,13 @@ public interface OrderInfoFeignClient {
      */
     @GetMapping("/order/info/searchDriverCurrentOrder/{driverId}")
     Result<CurrentOrderInfoVo> searchDriverCurrentOrder(@PathVariable("driverId") Long driverId);
+    /**
+     * 司机抢单
+     * @param driverId
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/order/info/robNewOrder/{driverId}/{orderId}")
+    Result<Boolean> robNewOrder(@PathVariable("driverId") Long driverId, @PathVariable("orderId") Long orderId);
+
 }

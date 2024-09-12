@@ -29,7 +29,10 @@ public class OrderServiceImpl implements OrderService {
     public CurrentOrderInfoVo searchDriverCurrentOrder(Long driverId) {
         return orderInfoFeignClient.searchDriverCurrentOrder(driverId).getData();
     }
-
+    @Override
+    public Boolean robNewOrder(Long driverId, Long orderId) {
+        return orderInfoFeignClient.robNewOrder(driverId,orderId).getData();
+    }
     @Autowired
     private OrderInfoFeignClient orderInfoFeignClient;
 

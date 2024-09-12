@@ -29,11 +29,11 @@ public class OrderInfoController {
         return Result.ok(orderInfoService.getOrderStatus(orderId));
     }
 
-//    @Operation(summary = "司机端查找当前订单")
-//    @GetMapping("/searchDriverCurrentOrder/{driverId}")
-//    public Result<CurrentOrderInfoVo> searchDriverCurrentOrder(@PathVariable Long driverId) {
-//        return Result.ok(orderInfoService.searchDriverCurrentOrder(driverId));
-//    }
+    @Operation(summary = "司机抢单")
+    @GetMapping("/robNewOrder/{driverId}/{orderId}")
+    public Result<Boolean> robNewOrder(@PathVariable Long driverId, @PathVariable Long orderId) {
+        return Result.ok(orderInfoService.robNewOrder(driverId, orderId));
+    }
 
 
 }

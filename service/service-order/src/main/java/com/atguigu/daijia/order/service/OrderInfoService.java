@@ -12,4 +12,5 @@ public interface OrderInfoService extends IService<OrderInfo> {
     Integer getOrderStatus(Long orderId);
 
 
+    Boolean robNewOrder(Long driverId, Long orderId);
 }
